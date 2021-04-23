@@ -1,0 +1,100 @@
+<html>
+<head>
+    <link href="lib/mathquill.css" rel="stylesheet">
+    <link href="lib/matheditor.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="lib/mathquill.min.js"></script>
+    <script src="lib/html2canvas.min.js"></script>
+    <script src="lib/matheditor.js"></script>
+    <script type="text/javascript">
+        var steps = 1;
+
+        function answerDiv() {
+            return document.getElementById('answers');
+        }
+
+        function screenshot() {
+            html2canvas(document.body).then(function (canvas) {
+                //window.open().document.write('<img src="' + canvas.toDataURL() + '" />');
+                // document.body.appendChild(canvas);
+                saveAs(canvas.toDataURL(), 'RSM-Problem.tiff');
+            });
+        }
+
+        function saveAs(uri, filename) {
+
+            var link = document.createElement('a');
+
+            if (typeof link.download === 'string') {
+
+                link.href = uri;
+                link.download = filename;
+
+                //Firefox requires the link to be in the body
+                document.body.appendChild(link);
+
+                //simulate click
+                link.click();
+
+                //remove the link when done
+                document.body.removeChild(link);
+
+            } else {
+
+                window.open(uri);
+
+            }
+        }
+
+        function enableEquation(id, lastContent) {
+            var element = document.getElementById(id);
+            element.editor = new MathEditor(id);
+            element.editor.setTemplate('floating-toolbar');
+            element.editor.setLatex(lastContent);
+        }
+
+        function answerId(step) {
+            return 'answer' + step;
+        }
+
+        function answerElement(step) {
+            return document.getElementById(answerId(step));
+        }
+
+        function getLatex(step) {
+            return answerElement(step).editor.answerMathField.latex();
+        }
+
+        function addEquation() {
+            var latex = getLatex(steps);
+            steps = steps + 1;
+            var newId = answerId(steps);
+            var div = answerDiv();
+            div.appendChild(document.createElement("br"));
+            div.appendChild(document.createElement("br"));
+            div.appendChild(document.createElement("br"));
+            var span = document.createElement("span");
+            div.appendChild(span);
+            span.id = newId;
+            enableEquation(newId, latex);
+        }
+    </script>
+</head>
+<body id='body' style="background:#F6F4F4;overflow:hidden">
+<div id="capture">
+    <p>Homework Steps for problem: <input type="text" style="width:50px;"/></p>
+    <div id="answers">
+        <span id="answer1"></span>
+    </div>
+    <br/><br/><br/>
+    <input type="button" onclick="addEquation();" value="Add Step"/>
+    <input type="button" onclick="screenshot();" value="Capture as Image"/>
+    <!--<input type="button" onclick="deleteLast();" value="Delete Last Step"/>-->
+</div>
+</body>
+
+<script type="text/javascript">
+    enableEquation('answer1', "");
+</script>
+
+</html>
