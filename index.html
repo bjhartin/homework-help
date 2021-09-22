@@ -13,11 +13,18 @@
             return document.getElementById('answers');
         }
 
+        function problemNumber() {
+            return document.getElementById("problemNumber").value;
+        }
+
         function screenshot() {
             html2canvas(document.body).then(function (canvas) {
-                //window.open().document.write('<img src="' + canvas.toDataURL() + '" />');
-                // document.body.appendChild(canvas);
-                saveAs(canvas.toDataURL(), 'RSM-Problem.tiff');
+                var screenShotName = 'RSM-Problem';
+                console.info(problemNumber());
+                if(problemNumber().length != 0) {
+                  screenShotName = screenShotName + '-' + problemNumber();
+                }
+                saveAs(canvas.toDataURL(), screenShotName + '.png');
             });
         }
 
@@ -70,26 +77,47 @@
             steps = steps + 1;
             var newId = answerId(steps);
             var div = answerDiv();
-            div.appendChild(document.createElement("br"));
-            div.appendChild(document.createElement("br"));
-            div.appendChild(document.createElement("br"));
             var span = document.createElement("span");
             div.appendChild(span);
             span.id = newId;
             enableEquation(newId, latex);
         }
+
+        function removeLastEquation() {
+            if(steps > 1) {
+                id = answerId(steps);
+                var element = document.getElementById(id);
+                element.remove();
+                steps = steps - 1;
+            }
+        }
     </script>
 </head>
 <body id='body' style="background:#F6F4F4;overflow:hidden">
 <div id="capture">
-    <p>Homework Steps for problem: <input type="text" style="width:50px;"/></p>
+    <p>Homework Steps for problem: <input id="problemNumber" type="text" style="width:50px;"/></p>
+    <p>Keyboard shortcuts:</p>
+    <ul>
+        <li>
+            Esc - Show/hide equation toolbar
+        </li>
+        <li>
+            Control Alt '+' - Add new equation (copies last equation)
+        </li>
+        <li>
+            Control Alt '-' - Remove last equation
+        </li>
+        <li>
+            Control Alt 's' - save as image (uses problem number for saved file name)
+        </li>
+    </ul>
     <div id="answers">
         <span id="answer1"></span>
     </div>
-    <br/><br/><br/>
+    <br/>
     <input type="button" onclick="addEquation();" value="Add Step"/>
-    <input type="button" onclick="screenshot();" value="Capture as Image"/>
-    <!--<input type="button" onclick="deleteLast();" value="Delete Last Step"/>-->
+    <input type="button" onclick="screenshot();" value="Save as .png file"/>
+    <input type="button" onclick="removeLastEquation();" value="Remove Last Step"/>
 </div>
 </body>
 
